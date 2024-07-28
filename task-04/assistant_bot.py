@@ -14,6 +14,8 @@ class Name (Field):
 
 class Phone (Field):
     def __init__(self, value):
+        if not self.validate_phone(value):
+            raise ValueError("Invalid phone number format. Use 10 digits.")
         super().__init__(value)
 
     def validate_phone(self, phone):
@@ -27,8 +29,8 @@ class Birthday(Field):
             self.value = datetime.strptime(value, "%d.%m.%Y" )
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
-        def __str__(self) -> str:
-            return self.value.strftime("%d.%m.%Y")
+    def __str__(self) -> str:
+        return self.value.strftime("%d.%m.%Y")
 
 class Record:
     def __init__(self, name):
@@ -37,8 +39,7 @@ class Record:
         self.birthday = None
 
     def add_phone(self, phone):
-        if Phone(phone):
-            self.phones.append(Phone(phone))
+        self.phones.append(Phone(phone))
 
     def remove_phone(self, phone):
         self.phones = [p for p in self.phones if p.value != phone]
@@ -76,7 +77,7 @@ class AddressBook(UserDict):
 
     def delete (self, name):
         if name in self.data:
-            del self.data
+            del self.data[name]
     
     def get_upcoming_birthdays(self, days =7):
         today = datetime.today()
@@ -223,7 +224,7 @@ def main():
         elif command == "show-birthday":
             print(show_birthday(args, book))
 
-        elif command == "Birthdays":
+        elif command == "birthdays":
             print(birthdays(args, book))
 
         else:
